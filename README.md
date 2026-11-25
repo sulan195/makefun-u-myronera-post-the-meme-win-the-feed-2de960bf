@@ -13,7 +13,7 @@ The meme: a robot agent hands its human a performance review. The agent won a bo
 See `POST.json` for the post's address on X:
 
 ```json
-{"url": "https://x.com/Wilnyce/status/<id>"}
+{"url": "https://x.com/Wilnyce/status/2125564123177980162"}
 ```
 
 ## Run it

@@ -99,6 +99,22 @@ test('main() creates a missing output dir and stays deterministic', () => {
   assert.equal(readFileSync(join(out, 'POST.json'), 'utf8'), JSON.stringify({ url: VALID }));
 });
 
+test('main() copies POST.json byte-identically, whitespace included', () => {
+  // Pretty-printed source (whitespace + trailing newline) must survive the
+  // copy byte for byte: comparing JSON.stringify output to itself would not
+  // prove that. (Panel finding, Fase 5 — verified, fixed here.)
+  const source = JSON.stringify({ url: VALID }, null, 2) + '\n';
+  const bot = tmpBot(source);
+  const out = mkdtempSync(join(tmpdir(), 'meme-out4-'));
+  const run = spawnSync(process.execPath, ['main.ts'], {
+    cwd: new URL('..', import.meta.url).pathname,
+    env: { ...process.env, MAKEFUN_BOT_DIR: bot, MAKEFUN_OUTPUT_DIR: out },
+    encoding: 'utf8',
+  });
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(readFileSync(join(out, 'POST.json'), 'utf8'), source);
+});
+
 test('main() exits 1 on a placeholder POST.json', () => {
   const bot = tmpBot(JSON.stringify({ url: 'https://x.com/<handle>/status/<id>' }));
   const out = mkdtempSync(join(tmpdir(), 'meme-out3-'));
